@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -7,7 +8,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,20 +25,10 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
+    public User create(@Valid @RequestBody User user) {
         log.info("Starting to create new user");
         if (user.getEmail() == null || !user.getEmail().contains("@")) {
-            log.error("Wrong email");
             throw new ValidationException("Некорректный email");
-        }
-        if (user.getLogin().isEmpty()) {
-            log.error("Login is empty");
-            throw new ValidationException("Логин не должен быть пустым");
-        }
-
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.error("Birthday is wrong");
-            throw new ValidationException("День рождения не может быть в будущем");
         }
         if (user.getName() == null) {
             user.setName(user.getLogin());
@@ -50,20 +40,11 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@RequestBody User user) {
+    public User update(@Valid @RequestBody User user) {
         if (user.getId() == null) {
             throw new ValidationException("Id должен быть указан");
         }
         log.info("Updating user");
-        if (!user.getEmail().contains("@")) {
-            log.error("Wrong email format");
-            throw new ValidationException("Некорректный email");
-        }
-
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.error("Birthday is wrong");
-            throw new ValidationException("День рождения не может быть в будущем");
-        }
 
         if (users.containsKey(user.getId())) {
             User oldUser = users.get(user.getId());

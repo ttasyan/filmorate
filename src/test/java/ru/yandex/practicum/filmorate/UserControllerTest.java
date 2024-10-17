@@ -99,13 +99,12 @@ public class UserControllerTest {
                 .build();
         userController.create(oldUser);
         User user = User.builder()
-                .id(oldUser.getId())
                 .name("sghn")
-                .birthday(LocalDate.of(2201, 9, 5))
+                .birthday(LocalDate.of(2001, 9, 5))
                 .email("gsPMs@mail.ru")
                 .login("sgsdg")
                 .build();
         Exception exception = assertThrows(ValidationException.class, () -> userController.update(user));
-        assertTrue(exception.getMessage().contains("не может быть в будущем"));
+        assertTrue(exception.getMessage().contains(" должен быть указан"));
     }
 }

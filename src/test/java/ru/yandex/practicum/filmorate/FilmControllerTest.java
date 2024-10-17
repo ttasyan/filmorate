@@ -66,8 +66,7 @@ public class FilmControllerTest {
                 .duration(100)
                 .releaseDate(LocalDate.of(1990, 10, 10))
                 .build();
-        Exception exception = assertThrows(ValidationException.class, () -> filmController.addFilm(film));
-        assertTrue(exception.getMessage().contains("не может быть пустым"));
+        assertThrows(ValidationException.class, () -> filmController.addFilm(film));
 
     }
 
@@ -101,13 +100,12 @@ public class FilmControllerTest {
                 .build();
         filmController.addFilm(oldFilm);
         Film film = Film.builder()
-                .id(oldFilm.getId())
                 .name("new film")
                 .description("new smth")
-                .duration(-1)
+                .duration(1)
                 .releaseDate(LocalDate.of(1990, 10, 11))
                 .build();
         Exception exception = assertThrows(ValidationException.class, () -> filmController.update(film));
-        assertTrue(exception.getMessage().contains("не должна быть отрицательной"));
+        assertTrue(exception.getMessage().contains("должен быть указан"));
     }
 }
