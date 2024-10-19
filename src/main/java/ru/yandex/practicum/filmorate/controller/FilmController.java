@@ -76,16 +76,15 @@ public class FilmController {
                 .orElse(0);
         return ++currentMaxId;
     }
+
     public Film validate(Film film) {
         if (film.getDescription().length() > 200) {
             log.debug("Description's length is more than 200");
             throw new ValidationException("Максимальное количество символов - 200");
-        }
-        else if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+        } else if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             log.debug("Release date is wrong");
             throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
-        }
-        else  if (film.getDuration() < 0) {
+        } else if (film.getDuration() < 0) {
             log.debug("Duration is negative");
             throw new ValidationException("Продолжительность не должна быть отрицательной");
         } else {
