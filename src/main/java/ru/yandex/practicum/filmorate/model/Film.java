@@ -10,9 +10,7 @@ import ru.yandex.practicum.filmorate.validation.ReleaseDateConstraint;
 
 import java.time.LocalDate;
 
-/**
- * Film.
- */
+
 @Data
 @Builder
 public class Film {
