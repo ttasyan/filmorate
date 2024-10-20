@@ -1,12 +1,22 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.Positive;
+import lombok.Builder;
+import lombok.Data;
+import ru.yandex.practicum.filmorate.validation.ReleaseDateConstraint;
 
-/**
- * Film.
- */
-@Getter
-@Setter
+
+import java.time.LocalDate;
+
+
+@Data
+@Builder
 public class Film {
+    private Integer id;
+    private String name;
+    private String description;
+    @ReleaseDateConstraint
+    private LocalDate releaseDate;
+    @Positive
+    private Integer duration;
 }
