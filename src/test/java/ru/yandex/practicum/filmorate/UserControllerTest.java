@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 
@@ -17,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class UserControllerTest {
     @Autowired
     UserController userController;
+    @Autowired
+    UserService userService;
 
     @AfterEach
     public void cleanUp() {
@@ -107,4 +110,6 @@ public class UserControllerTest {
         Exception exception = assertThrows(ValidationException.class, () -> userController.update(user));
         assertTrue(exception.getMessage().contains(" должен быть указан"));
     }
+
+
 }

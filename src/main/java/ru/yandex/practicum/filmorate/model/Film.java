@@ -7,6 +7,8 @@ import ru.yandex.practicum.filmorate.validation.ReleaseDateConstraint;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
@@ -19,4 +21,13 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private Integer duration;
+    private List<Integer> likes;
+
+    public void addLike(Integer filmId) {
+        likes.add(filmId);
+    }
+    public List<Integer> setLikes() {
+        return likes = new ArrayList<>();
+    }
 }
+
