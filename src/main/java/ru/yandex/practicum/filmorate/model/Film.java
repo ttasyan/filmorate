@@ -26,6 +26,7 @@ public class Film {
     public void addLike(Integer filmId) {
         likes.add(filmId);
     }
+
     public List<Integer> setLikes() {
         return likes = new ArrayList<>();
     }
