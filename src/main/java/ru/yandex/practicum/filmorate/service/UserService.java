@@ -9,8 +9,8 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -62,10 +62,36 @@ public class UserService {
 
     public Collection<User> allFriends(Integer id) {
         User user = userStorage.getUserById(id);
-        Collection<User> friends = new ArrayList<>();
-        for (Integer userId : user.getFriends()) {
-            friends.add(userStorage.getUserById(userId));
+        return user.getFriends().stream()
+                .map(userStorage::getUserById)
+                .collect(Collectors.toList());
+    }
+
+    public List<User> commonFriends(Integer id, Integer otherId) {
+        User user1 = userStorage.getUserById(id);
+        User user2 = userStorage.getUserById(otherId);
+
+        if (user1 == null || user2 == null) {
+            throw new NotFoundException("One or both users not found");
         }
-        return friends;
+        Set<Integer> friends1 = user1.getFriends();
+        Set<Integer> friends2 = user2.getFriends();
+        Set<Integer> commonFriendIds = new HashSet<>(friends1);
+        commonFriendIds.retainAll(friends2);
+        return commonFriendIds.stream()
+                .map(userStorage::getUserById)
+                .collect(Collectors.toList());
+    }
+
+    public Collection<User> allUsers() {
+        return userStorage.allUsers();
+    }
+
+    public User create(User user) {
+        return userStorage.create(user);
+    }
+
+    public User update(User user) {
+        return userStorage.update(user);
     }
 }

@@ -32,10 +32,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (film.getName().isEmpty()) {
             throw new ValidationException("Название не может быть пустым");
         }
-        if (film.getDescription().length() > 200) {
-            log.debug("Description's length is more than 200");
-            throw new ValidationException("Максимальное количество символов - 200");
-        }
         film.setLikes();
         film.setId(getId());
         films.put(film.getId(), film);
@@ -49,10 +45,6 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new ValidationException("Id должен быть указан");
         }
 
-        if (newFilm.getDescription().length() > 200) {
-            log.debug("Description's length is more than 200");
-            throw new ValidationException("Максимальное количество символов - 200");
-        }
         log.info("Updating film");
 
         if (films.containsKey(newFilm.getId())) {

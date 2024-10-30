@@ -10,10 +10,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class FilmService {
@@ -71,22 +68,22 @@ public class FilmService {
     }
 
     public List<Film> mostLiked(Integer count) {
-        if (count == null) {
-            count = 10;
-        }
-        List<Film> sorted = new ArrayList<>(filmStorage.getFilms().values().stream()
+        return new ArrayList<>(filmStorage.getFilms().values().stream()
                 .sorted(Comparator.comparingInt(f -> f.getLikes().size()))
                 .limit(count)
-                .toList());
-        Collections.reverse(sorted);
-        List<Film> popular = new ArrayList<>();
-        if (sorted.size() < count)
-            return sorted;
-        else {
-            for (int i = 0; i < count; i++) {
-                popular.add(sorted.get(i));
-            }
-            return popular;
-        }
+                .toList().reversed());
+    }
+
+    public Collection<Film> allFilms() {
+        return filmStorage.allFilms();
+    }
+
+    public Film addFilm(Film film) {
+        return filmStorage.addFilm(film);
+    }
+
+    public Film update(Film newFilm) {
+        return filmStorage.update(newFilm);
+
     }
 }
