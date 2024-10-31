@@ -108,4 +108,5 @@ public class FilmControllerTest {
         Exception exception = assertThrows(ValidationException.class, () -> filmController.update(film));
         assertTrue(exception.getMessage().contains("должен быть указан"));
     }
+
 }

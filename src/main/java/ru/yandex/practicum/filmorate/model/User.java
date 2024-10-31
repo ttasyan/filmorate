@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -21,4 +23,14 @@ public class User {
     private String name;
     @Past(message = "День рождения не может быть в будущем")
     private LocalDate birthday;
+    @Builder.Default
+    private Set<Integer> friends = new HashSet<>();
+
+    public void addFriend(Integer friendId) {
+        friends.add(friendId);
+    }
+
+    public void setFriends() {
+        friends = new HashSet<>();
+    }
 }
