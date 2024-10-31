@@ -57,10 +57,7 @@ public class FilmService {
             log.error("User not found");
             throw new NotFoundException("Юзер не найден");
         }
-        if (!(film.getLikes().contains(userId))) {
-            log.error("Like by user {} not found", userId);
-            throw new ValidationException("Этот юзер не ставил лайк");
-        }
+
         film.getLikes().remove(userId);
         filmStorage.update(film);
         log.info("Like deleted");

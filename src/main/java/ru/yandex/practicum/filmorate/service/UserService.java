@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -48,10 +47,7 @@ public class UserService {
         }
         User user = userStorage.getUserById(id);
         User friend = userStorage.getUserById(friendId);
-        if (user.getFriends().contains(friendId)) {
-            log.error("Friend already exists");
-            throw new ValidationException("Такой друг уже добавлен");
-        }
+
         user.addFriend(friend.getId());
         friend.addFriend(user.getId());
         userStorage.update(user);

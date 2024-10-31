@@ -32,8 +32,8 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (film.getName().isEmpty()) {
             throw new ValidationException("Название не может быть пустым");
         }
-        film.setLikes();
         film.setId(getId());
+        film.setLikes();
         films.put(film.getId(), film);
         log.info("Added new film");
         return film;

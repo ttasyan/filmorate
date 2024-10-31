@@ -23,14 +23,14 @@ public class User {
     private String name;
     @Past(message = "День рождения не может быть в будущем")
     private LocalDate birthday;
-    private Set<Integer> friends;
+    @Builder.Default
+    private Set<Integer> friends = new HashSet<>();
 
     public void addFriend(Integer friendId) {
         friends.add(friendId);
     }
 
-    public Set<Integer> setFriend() {
-        return friends = new HashSet<>();
+    public void setFriends() {
+        friends = new HashSet<>();
     }
-
 }

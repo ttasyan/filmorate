@@ -23,15 +23,15 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private Integer duration;
-    private Set<Integer> likes;
-    // не могу сразу инициализировать коллекцию, она всегда равна null, аналогично в классе User
+    @Builder.Default
+    private Set<Integer> likes = new HashSet<>();
 
     public void addLike(Integer filmId) {
         likes.add(filmId);
     }
 
-    public Set<Integer> setLikes() {
-        return likes = new HashSet<>();
+    public void setLikes() {
+        likes = new HashSet<>();
     }
 }
 
