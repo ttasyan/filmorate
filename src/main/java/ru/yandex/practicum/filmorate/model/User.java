@@ -8,7 +8,9 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -25,9 +27,16 @@ public class User {
     private LocalDate birthday;
     @Builder.Default
     private Set<Integer> friends = new HashSet<>();
+    private Map<Integer, Status> statusOfFriends = new HashMap<>();
 
-    public void addFriend(Integer friendId) {
+    public void addFriend(Integer friendId, Status status) {
         friends.add(friendId);
+        statusOfFriends.put(friendId, status);
+    }
+
+    public void deleteFriend(Integer friendId) {
+        friends.remove(friendId);
+        statusOfFriends.remove(friendId);
     }
 
     public void setFriends() {

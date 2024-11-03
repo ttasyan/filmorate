@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Status;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -30,8 +31,8 @@ public class UserService {
         }
         User user = userStorage.getUserById(id);
         User friend = userStorage.getUserById(friendId);
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(id);
+        user.deleteFriend(friendId);
+        friend.deleteFriend(id);
         userStorage.update(user);
         userStorage.update(friend);
         log.info("Friend deleted");
@@ -48,10 +49,15 @@ public class UserService {
         User user = userStorage.getUserById(id);
         User friend = userStorage.getUserById(friendId);
 
-        user.addFriend(friend.getId());
-        friend.addFriend(user.getId());
+        if (friend.getFriends().contains(id)) {
+            user.addFriend(friend.getId(), Status.APPROVED);
+            userStorage.update(friend);
+            log.info("Friendship approved between user {} and friend {}", id, friendId);
+        } else {
+            user.addFriend(friend.getId(), Status.NOT_APPROVED);
+            log.info("Friend request sent from user {} to friend {}", id, friendId);
+        }
         userStorage.update(user);
-        userStorage.update(friend);
         log.info("Added new friend");
         return user;
     }
