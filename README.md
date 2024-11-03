@@ -1,57 +1,57 @@
 # java-filmorate
 
-https://github.com/user-attachments/assets/e89bec0d-0ec5-4760-bfb3-9c3532fc1e63
+![](https://github.com/user-attachments/assets/e89bec0d-0ec5-4760-bfb3-9c3532fc1e63)
 
 
 ## Таблицы
 
 ### Film
-Film_id - первичный ключ, int
+Film_id - первичный ключ, integer
 
-Name - имя, string 
+Name - имя, varchar 
 
-Description - описание, string
+Description - описание, varchar
 
 Release_date - дата выхода, date
 
-Duration - длительность фильма, int
+Duration - длительность фильма, integer
 
-Genre - жанр, внешний ключ, отсылается к Genre.Genre_id, int 
+Genre - жанр, внешний ключ, отсылается к Genre.Genre_id, integer 
 
-Rating - рейтинг, внешний ключ, отсылается к Rating.Rating_id, int
+Rating - рейтинг, внешний ключ, отсылается к Rating.Rating_id, integer
 
 ### User
-User_id - первичный ключ, int
+User_id - первичный ключ, integer
 
-Email - почта, string 
+Email - почта, varchar 
 
-Login - логин, string
+Login - логин, varchar
 
-Name - имя, string 
+Name - имя, varchar 
 
 Birthday - день рождения, date
 
 ### Genre
-Genre_id - первичный ключ, int
+Genre_id - первичный ключ, integer
 
-Name - название жанра, string 
+Name - название жанра, varchar 
 
 ### Rating
-Rating_id - первичный ключ, int
+Rating_id - первичный ключ, integer
 
-Name - рейтинг, string
+Name - рейтинг, varchar
 
 ### Friends
-User_id - первичный и внешний ключ, отсылается к User.User_id, int 
+User_id - первичный и внешний ключ, отсылается к User.User_id, integer 
 
-Friend_id - первичный и внешний ключ, отсылается к User.User_id, int 
+Friend_id - первичный и внешний ключ, отсылается к User.User_id, integer 
 
-Status - статус дружбы (подтвержденная или нет), string
+Status - статус дружбы (подтвержденная или нет), varchar
 
 ### Likes
-Film_id - первичный и внешний ключ, отсылается к Film.Film_id, int 
+Film_id - первичный и внешний ключ, отсылается к Film.Film_id, integer 
 
-User_id - первичный и внешний ключ, отсылается к User.User_id, int 
+User_id - первичный и внешний ключ, отсылается к User.User_id, integer 
 
 
 ## Примеры запросов
