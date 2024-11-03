@@ -1,7 +1,7 @@
 # java-filmorate
 
-![](https://github.com/user-attachments/assets/e89bec0d-0ec5-4760-bfb3-9c3532fc1e63)
 
+![image](https://github.com/user-attachments/assets/b7cbd629-aa0a-42d6-91e6-d4b3a26a80ac)
 
 ## Таблицы
 
