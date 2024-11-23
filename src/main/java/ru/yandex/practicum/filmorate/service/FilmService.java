@@ -4,9 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.FilmGenreRepository;
+import ru.yandex.practicum.filmorate.dal.FilmLikeRepository;
+import ru.yandex.practicum.filmorate.dal.GenreRepository;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -16,15 +23,22 @@ import java.util.*;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final GenreRepository genreRepository;
+    private final FilmGenreRepository filmGenreRepository;
+    private final FilmLikeRepository filmLikeRepository;
     private static final Logger log = LoggerFactory.getLogger("FilmService");
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage, GenreRepository genreRepository,
+                       FilmGenreRepository filmGenreRepository, FilmLikeRepository filmLikeRepository) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.genreRepository = genreRepository;
+        this.filmGenreRepository = filmGenreRepository;
+        this.filmLikeRepository =filmLikeRepository;
     }
 
-    public Film addLike(Integer id, Integer userId) {
+    public FilmDto addLike(Integer id, Integer userId) {
         log.info("Starting to add new like");
         Film film = filmStorage.getFilms().get(id);
         if (film == null) {
@@ -41,12 +55,16 @@ public class FilmService {
         }
         film.addLike(userId);
         filmStorage.update(film);
+        filmLikeRepository.addLike(id, userId);
+        FilmDto response = FilmMapper.mapToFilmDto(film);
+        response.getLikes().add(userId);
+
         log.info("Added new like");
-        return filmStorage.getFilms().get(id);
+        return response;
 
     }
 
-    public Film deleteLike(Integer id, Integer userId) {
+    public FilmDto deleteLike(Integer id, Integer userId) {
         log.info("Starting to delete like");
         Film film = filmStorage.getFilms().get(id);
         if (film == null) {
@@ -60,27 +78,54 @@ public class FilmService {
 
         film.getLikes().remove(userId);
         filmStorage.update(film);
+        filmLikeRepository.deleteLike(id, userId);
         log.info("Like deleted");
-        return filmStorage.getFilms().get(id);
+        return FilmMapper.mapToFilmDto(film);
     }
 
-    public List<Film> mostLiked(Integer count) {
-        return new ArrayList<>(filmStorage.getFilms().values().stream()
+    public List<FilmDto> mostLiked(Integer count) {
+        List<Film> allFilms = new ArrayList<>(filmStorage.getFilms().values().stream()
                 .sorted(Comparator.comparingInt(f -> f.getLikes().size()))
-                .limit(count)
-                .toList().reversed());
+                .toList()
+                .reversed());
+
+        List<Film> topFilms = new ArrayList<>();
+        for (int i = 0; i < Math.min(count, allFilms.size()); i++) {
+            topFilms.add(allFilms.get(i));
+        }
+        return topFilms.stream()
+                .map(FilmMapper::mapToFilmDto)
+                .map(this::addGenresToFilmDto)
+                .toList();
     }
 
-    public Collection<Film> allFilms() {
-        return filmStorage.allFilms();
+    public Collection<FilmDto> allFilms() {
+
+        return filmStorage.allFilms().stream()
+                .map(FilmMapper::mapToFilmDto)
+                .map(this::addGenresToFilmDto)
+                .toList();
     }
 
-    public Film addFilm(Film film) {
-        return filmStorage.addFilm(film);
+    public FilmDto addFilm(Film film) {
+        Film newFilm = filmStorage.addFilm(film);
+        if (newFilm.getGenres() != null) {
+            Set<Genre> uniqueGenres = new LinkedHashSet<>(newFilm.getGenres());
+            uniqueGenres.forEach(genre -> filmGenreRepository.addGenreToFilm(newFilm.getId(), genre.getId()));
+        }
+        return FilmMapper.mapToFilmDto(newFilm);
     }
 
-    public Film update(Film newFilm) {
-        return filmStorage.update(newFilm);
+    public FilmDto update(UpdateFilmRequest request) {
 
+        Film updateFilm = FilmMapper.updateFilmFields(filmStorage.getFilmById(request.getId()), request);
+        updateFilm = filmStorage.update(updateFilm);
+        return FilmMapper.mapToFilmDto(updateFilm);
+
+    }
+    private FilmDto addGenresToFilmDto(FilmDto filmDto) {
+        List<Genre> filmGenresList = filmGenreRepository.getGenresByFilmId(filmDto.getId());
+        filmDto.setGenres(filmGenresList);
+        return filmDto;
     }
 }

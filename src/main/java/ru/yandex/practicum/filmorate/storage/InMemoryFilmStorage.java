@@ -32,6 +32,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (film.getName().isEmpty()) {
             throw new ValidationException("Название не может быть пустым");
         }
+//        if (film.getMpa().getName() == null ) {
+//          throw new ValidationException("Mpa не может быть null") ;
+//        }
+//        if (film.getGenres() != null) {
+//            if (film.getGenres().stream().anyMatch(genre -> genre.getName() == null)) {
+//                throw new ValidationException("Жанры не могут быть null");
+//            }
+//        }
         film.setId(getId());
         film.setLikes();
         films.put(film.getId(), film);
@@ -65,6 +73,9 @@ public class InMemoryFilmStorage implements FilmStorage {
             if (newFilm.getLikes() != null) {
                 oldFilm.setLikes(newFilm.getLikes());
             }
+            if (newFilm.getMpa() != null) {
+                oldFilm.setMpa(newFilm.getMpa());
+            }
             log.info("Updated old film");
             return oldFilm;
         }
@@ -79,5 +90,9 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .max()
                 .orElse(0);
         return ++currentMaxId;
+    }
+    @Override
+    public Film getFilmById(Integer id) {
+        return films.get(id);
     }
 }

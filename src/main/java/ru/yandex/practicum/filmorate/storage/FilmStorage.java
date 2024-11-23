@@ -13,4 +13,6 @@ public interface FilmStorage {
     public Film addFilm(Film film);
 
     public Film update(Film newFilm);
+
+    public Film getFilmById(Integer id);
 }

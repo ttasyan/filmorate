@@ -4,8 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.FriendshipRepository;
+import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Status;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -15,85 +18,102 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserStorage userStorage;
+    private final FriendshipRepository friendshipRepository;
     private static final Logger log = LoggerFactory.getLogger("UserService");
 
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(UserStorage userStorage, FriendshipRepository friendshipRepository) {
         this.userStorage = userStorage;
+        this.friendshipRepository = friendshipRepository;
     }
 
-    public User deleteFriend(Integer id, Integer friendId) {
+    public UserDto deleteFriend(Integer id, Integer friendId) {
         log.info("Starting to delete a friend");
-        if (userStorage.getUserById(friendId) == null) {
-            log.error("Friend not found");
-            throw new NotFoundException("Друг не найден");
-        }
-        User user = userStorage.getUserById(id);
-        User friend = userStorage.getUserById(friendId);
-        user.deleteFriend(friendId);
-        friend.deleteFriend(id);
-        userStorage.update(user);
-        userStorage.update(friend);
+        UserDto response = UserMapper.mapToUserDto(userStorage.getUserById(id));
+        UserDto friend = UserMapper.mapToUserDto(userStorage.getUserById(friendId));
+
+        friendshipRepository.deleteFriend(id, friendId);
+
+        response.getFriendIds().remove(friendId);
+        friend.getFriendIds().remove(id);
+        UpdateUserRequest updateRequest = new UpdateUserRequest();
+        updateRequest.setId(response.getId());
+
+        update(updateRequest);
+        updateRequest.setId(friend.getId());
+
+        update(updateRequest);
+
         log.info("Friend deleted");
-        return userStorage.getUserById(id);
+        return response;
 
     }
 
-    public User addFriend(Integer id, Integer friendId) {
+    public UserDto addFriend(Integer id, Integer friendId) {
         log.info("Starting to add new friend");
-        if (userStorage.getUserById(id) == null || userStorage.getUserById(friendId) == null) {
-            log.error("User not found");
-            throw new NotFoundException("Друг не найден");
-        }
-        User user = userStorage.getUserById(id);
-        User friend = userStorage.getUserById(friendId);
+        UserDto response = UserMapper.mapToUserDto(userStorage.getUserById(id));
+        UserDto friend = UserMapper.mapToUserDto(userStorage.getUserById(friendId));
+        List<User> userList = friendshipRepository.allFriends(id);
 
-        if (friend.getFriends().contains(id)) {
-            user.addFriend(friend.getId(), Status.APPROVED);
-            userStorage.update(friend);
-            log.info("Friendship approved between user {} and friend {}", id, friendId);
-        } else {
-            user.addFriend(friend.getId(), Status.NOT_APPROVED);
-            log.info("Friend request sent from user {} to friend {}", id, friendId);
-        }
-        userStorage.update(user);
+
+         friendshipRepository.addFriend(id, friendId);
+        userList.add(userStorage.getUserById(friendId));
+        response.setFriendIds(userList.stream()
+                .map(User::getId)
+                .collect(Collectors.toSet()));
+
         log.info("Added new friend");
-        return user;
+        return response;
     }
 
-    public Collection<User> allFriends(Integer id) {
+    public Collection<UserDto> allFriends(Integer id) {
         User user = userStorage.getUserById(id);
-        return user.getFriends().stream()
+        if (user == null) {
+            throw new NotFoundException("Юзер не найден");
+        }
+
+        return user.getFriendIds().stream()
                 .map(userStorage::getUserById)
-                .collect(Collectors.toList());
+                .map(UserMapper::mapToUserDto)
+                .toList();
+
     }
 
-    public List<User> commonFriends(Integer id, Integer otherId) {
+    public List<UserDto> commonFriends(Integer id, Integer otherId) {
         User user1 = userStorage.getUserById(id);
         User user2 = userStorage.getUserById(otherId);
 
         if (user1 == null || user2 == null) {
             throw new NotFoundException("One or both users not found");
         }
-        Set<Integer> friends1 = user1.getFriends();
-        Set<Integer> friends2 = user2.getFriends();
-        Set<Integer> commonFriendIds = new HashSet<>(friends1);
-        commonFriendIds.retainAll(friends2);
-        return commonFriendIds.stream()
+        Set<Integer> friends1 = user1.getFriendIds();
+
+        Set<Integer> friends2 = user2.getFriendIds();
+
+        friends1.retainAll(friends2);
+
+        return friends1.stream()
                 .map(userStorage::getUserById)
-                .collect(Collectors.toList());
+                .map(UserMapper::mapToUserDto)
+                .toList();
+
     }
 
-    public Collection<User> allUsers() {
-        return userStorage.allUsers();
+    public List<UserDto> allUsers() {
+        return userStorage.allUsers().stream()
+                .map(UserMapper::mapToUserDto)
+                .toList();
     }
 
-    public User create(User user) {
-        return userStorage.create(user);
+    public UserDto create(User user) {
+        return UserMapper.mapToUserDto(userStorage.create(user));
     }
 
-    public User update(User user) {
-        return userStorage.update(user);
+    public UserDto update(UpdateUserRequest request) {
+        User user = userStorage.getUserById(request.getId());
+        User updateUser = UserMapper.updateUserFields(user, request);
+        updateUser = userStorage.update(updateUser);
+        return UserMapper.mapToUserDto(updateUser);
     }
 }

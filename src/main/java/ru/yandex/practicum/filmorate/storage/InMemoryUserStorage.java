@@ -69,8 +69,8 @@ public class InMemoryUserStorage implements UserStorage {
             if (user.getBirthday() != null) {
                 oldUser.setBirthday(user.getBirthday());
             }
-            if (user.getFriends() != null) {
-                oldUser.setFriends(user.getFriends());
+            if (user.getFriendIds() != null) {
+                oldUser.setFriendIds(user.getFriendIds());
             }
             log.info("Updated old user");
             return oldUser;

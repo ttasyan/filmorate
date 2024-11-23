@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -19,34 +21,34 @@ public class FilmController {
 
 
     @GetMapping
-    public Collection<Film> allFilms() {
+    public Collection<FilmDto> allFilms() {
         return filmService.allFilms();
     }
 
     @GetMapping("/popular")
-    public List<Film> popularFilms(@RequestParam(required = false, defaultValue = "10") Integer count) {
+    public List<FilmDto> popularFilms(@RequestParam(required = false, defaultValue = "10") Integer count) {
         return filmService.mostLiked(count);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Film addFilm(@Valid @RequestBody Film film) {
+    public FilmDto addFilm(@Valid @RequestBody Film film) {
         return filmService.addFilm(film);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film newFilm) {
-        return filmService.update(newFilm);
+    public FilmDto update(@RequestBody UpdateFilmRequest request) {
+        return filmService.update(request);
 
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public Film addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+    public FilmDto addLike(@PathVariable Integer id, @PathVariable Integer userId) {
         return filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public Film deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
+    public FilmDto deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
         return filmService.deleteLike(id, userId);
     }
 }
