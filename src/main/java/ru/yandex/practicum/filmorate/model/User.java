@@ -32,6 +32,7 @@ public class User {
     public void setFriends() {
         friendIds = new HashSet<>();
     }
+
     public void addFriend(Integer friendId) {
         friendIds.add(friendId);
     }
@@ -39,7 +40,6 @@ public class User {
     public void removeFriend(Integer friendId) {
         friendIds.remove(friendId);
     }
-
 
 
 }
