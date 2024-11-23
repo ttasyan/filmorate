@@ -15,6 +15,7 @@ public class GenreRepository extends BaseRepository<Genre> {
 
     private static final String FIND_ALL_QUERY = "SELECT * FROM genre";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM genre WHERE genre_id = ?";
+
     public Collection<Genre> allGenres() {
         return findMany(FIND_ALL_QUERY);
     }

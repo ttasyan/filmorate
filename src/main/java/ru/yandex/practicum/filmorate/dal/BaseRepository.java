@@ -22,7 +22,7 @@ public class BaseRepository<T> {
             throw new NotFoundException("Не удалось найти данные");
         }
         return result.getFirst();
-        }
+    }
 
 
     protected List<T> findMany(String query, Object... params) {

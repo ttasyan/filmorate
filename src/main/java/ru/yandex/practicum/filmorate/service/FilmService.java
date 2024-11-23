@@ -35,7 +35,7 @@ public class FilmService {
         this.userStorage = userStorage;
         this.genreRepository = genreRepository;
         this.filmGenreRepository = filmGenreRepository;
-        this.filmLikeRepository =filmLikeRepository;
+        this.filmLikeRepository = filmLikeRepository;
     }
 
     public FilmDto addLike(Integer id, Integer userId) {
@@ -123,6 +123,7 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(updateFilm);
 
     }
+
     private FilmDto addGenresToFilmDto(FilmDto filmDto) {
         List<Genre> filmGenresList = filmGenreRepository.getGenresByFilmId(filmDto.getId());
         filmDto.setGenres(filmGenresList);

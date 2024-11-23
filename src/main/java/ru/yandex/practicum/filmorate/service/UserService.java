@@ -57,7 +57,7 @@ public class UserService {
         List<User> userList = friendshipRepository.allFriends(id);
 
 
-         friendshipRepository.addFriend(id, friendId);
+        friendshipRepository.addFriend(id, friendId);
         userList.add(userStorage.getUserById(friendId));
         response.setFriendIds(userList.stream()
                 .map(User::getId)

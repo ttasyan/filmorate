@@ -19,7 +19,7 @@ public class FilmLikeRepository extends BaseRepository<Film> {
     }
 
     public void deleteLike(Integer id, Integer userId) {
-         delete(DELETE_QUERY, id, userId);
+        delete(DELETE_QUERY, id, userId);
     }
 
 }

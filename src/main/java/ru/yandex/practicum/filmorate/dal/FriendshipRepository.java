@@ -19,6 +19,7 @@ public class FriendshipRepository extends BaseRepository<User> {
             "WHERE f.user_id = ?";
     private static final String FIND_COMMON_FRIENDS_QUERY = "SELECT u.* FROM users u JOIN friends f1 ON u.id = f1.friend_id " +
             "JOIN friends f2 ON u.id = f2.friend_id WHERE f1.user_id = ? AND f2.user_id = ?";
+
     public void addFriend(Integer id, Integer friendId) {
         String status = "Неподтвержденно";
         insert(ADD_QUERY, id, friendId);
@@ -29,6 +30,7 @@ public class FriendshipRepository extends BaseRepository<User> {
         delete(DELETE_QUERY, id, friendId);
 
     }
+
     public List<User> allFriends(Integer id) {
         return findMany(FIND_ALL_FRIENDS_QUERY, id);
     }

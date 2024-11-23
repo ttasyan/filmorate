@@ -91,6 +91,7 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .orElse(0);
         return ++currentMaxId;
     }
+
     @Override
     public Film getFilmById(Integer id) {
         return films.get(id);

@@ -23,6 +23,7 @@ public class UserMapper {
         }
         return user;
     }
+
     public static UserDto mapToUserDto(User user) {
         UserDto dto = new UserDto();
         dto.setId(user.getId());

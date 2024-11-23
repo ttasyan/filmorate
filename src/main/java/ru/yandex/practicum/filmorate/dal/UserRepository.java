@@ -12,15 +12,17 @@ public class UserRepository extends BaseRepository<User> {
     public UserRepository(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
     }
+
     private static final String FIND_ALL_QUERY = "SELECT * FROM users";
     private static final String INSERT_QUERY = "INSERT INTO users(login, name, email, birthday)" +
             "VALUES (?, ?, ?, ?) returning id";
     private static final String UPDATE_QUERY = "UPDATE users SET login = ?, name = ?, email = ?, birthday = ? WHERE id = ?";
-private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE id =?";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE id =?";
 
     public User findUserById(int id) {
         return findOne(FIND_BY_ID_QUERY, id);
     }
+
     public Collection<User> allUsers() {
         return findMany(FIND_ALL_QUERY);
     }
