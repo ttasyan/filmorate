@@ -25,12 +25,10 @@ public class GenreControllerTest {
 
 
     @BeforeEach
-	public void setUp() {
-		RowMapper<Genre> genreRowMapper = new BeanPropertyRowMapper<>(Genre .class);
-		genreRepository = new GenreRepository(jdbcTemplate, genreRowMapper);
+    public void setUp() {
+        RowMapper<Genre> genreRowMapper = new BeanPropertyRowMapper<>(Genre.class);
+        genreRepository = new GenreRepository(jdbcTemplate, genreRowMapper);
 
-//        jdbcTemplate.update("INSERT INTO genre (genre_id, name) VALUES (1, 'Action')");
-//        jdbcTemplate.update("INSERT INTO genre (genre_id, name) VALUES (2, 'Comedy')");
     }
 
     @Test
@@ -38,12 +36,14 @@ public class GenreControllerTest {
         Collection<Genre> genres = genreRepository.allGenres();
         assertEquals(6, genres.size());
     }
+
     @Test
     void findById_shouldReturnGenre_whenExists() {
         Genre genre = genreRepository.findById(1);
         assertNotNull(genre);
         assertEquals("Комедия", genre.getName());
     }
+
     @Test
     void findById_shouldReturnNull_whenNotExists() {
 
