@@ -21,6 +21,7 @@ public class FriendshipRepository extends BaseRepository<Friendship> {
             "JOIN friends f2 ON u.user_id = f2.friend_id WHERE f1.user_id = ? AND f2.user_id = ?";
     private static final String UPDATE_FRIEND_BY_ID = "UPDATE friends SET status = ? " +
             "WHERE user_id = ? AND friend_id = ?";
+
     public Friendship addFriend(Integer userId, Integer friendId, boolean status) {
         Friendship friendship = Friendship.builder()
                 .userId(userId)
@@ -43,6 +44,7 @@ public class FriendshipRepository extends BaseRepository<Friendship> {
     public List<Friendship> commonFriends(Integer id, Integer friendId) {
         return findMany(FIND_COMMON_FRIENDS_QUERY, id, friendId);
     }
+
     public Friendship updateStatus(Integer userId, Integer friendId, boolean status) {
         Friendship friendship = Friendship.builder()
                 .userId(userId)
