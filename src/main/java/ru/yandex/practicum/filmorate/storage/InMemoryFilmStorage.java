@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,16 +33,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (film.getName().isEmpty()) {
             throw new ValidationException("Название не может быть пустым");
         }
-//        if (film.getMpa().getName() == null ) {
-//          throw new ValidationException("Mpa не может быть null") ;
-//        }
-//        if (film.getGenres() != null) {
-//            if (film.getGenres().stream().anyMatch(genre -> genre.getName() == null)) {
-//                throw new ValidationException("Жанры не могут быть null");
-//            }
-//        }
         film.setId(getId());
         film.setLikes();
+        if (film.getGenres() == null) {
+            film.setGenres(new ArrayList<>());
+        }
         films.put(film.getId(), film);
         log.info("Added new film");
         return film;
@@ -50,7 +46,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film update(Film newFilm) {
         if (newFilm.getId() == null) {
-            throw new ValidationException("Id должен быть указан");
+            throw new NotFoundException("Id должен быть указан");
         }
 
         log.info("Updating film");
@@ -75,6 +71,9 @@ public class InMemoryFilmStorage implements FilmStorage {
             }
             if (newFilm.getMpa() != null) {
                 oldFilm.setMpa(newFilm.getMpa());
+            }
+            if (newFilm.getGenres() != null) {
+                oldFilm.setGenres(newFilm.getGenres());
             }
             log.info("Updated old film");
             return oldFilm;

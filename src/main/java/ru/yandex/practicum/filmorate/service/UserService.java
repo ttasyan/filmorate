@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.FriendshipRepository;
 import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -30,23 +32,24 @@ public class UserService {
 
     public UserDto deleteFriend(Integer id, Integer friendId) {
         log.info("Starting to delete a friend");
+
         UserDto response = UserMapper.mapToUserDto(userStorage.getUserById(id));
         UserDto friend = UserMapper.mapToUserDto(userStorage.getUserById(friendId));
 
-        friendshipRepository.deleteFriend(id, friendId);
+        List<Friendship> userList = friendshipRepository.allFriends(id);
+        List<Friendship> friendList = friendshipRepository.allFriends(friendId);
 
-        response.getFriendIds().remove(friendId);
-        friend.getFriendIds().remove(id);
-        UpdateUserRequest updateRequest = new UpdateUserRequest();
-        updateRequest.setId(response.getId());
+        if (!checkFriendshipExists(userList, id, friendId)) {
+            return response;
+        }
+        checkAndUpdateFriendshipStatus(id, friendId, friendList, false);
 
-        update(updateRequest);
-        updateRequest.setId(friend.getId());
+        if (friendshipRepository.deleteFriend(id, friendId)) {
+            log.info("Friend deleted");
+            return response;
+        }
 
-        update(updateRequest);
-
-        log.info("Friend deleted");
-        return response;
+        throw new InternalServerException("Не удалось удалить друга с id: " + friendId);
 
     }
 
@@ -54,13 +57,17 @@ public class UserService {
         log.info("Starting to add new friend");
         UserDto response = UserMapper.mapToUserDto(userStorage.getUserById(id));
         UserDto friend = UserMapper.mapToUserDto(userStorage.getUserById(friendId));
-        List<User> userList = friendshipRepository.allFriends(id);
-
-
-        friendshipRepository.addFriend(id, friendId);
-        userList.add(userStorage.getUserById(friendId));
+        List<Friendship> userList = friendshipRepository.allFriends(id);
+        List<Friendship> friendList = friendshipRepository.allFriends(friendId);
+        if (checkFriendshipExists(userList, id, friendId)) {
+            throw new InternalServerException("Пользователь с id: " + id + " уже добавлял пользователя с id: "
+                    + friendId + " в друзья");
+        }
+        boolean status = checkAndUpdateFriendshipStatus(id, friendId, friendList, true);
+        Friendship friendship = friendshipRepository.addFriend(id, friendId, status);
+        userList.add(friendship);
         response.setFriendIds(userList.stream()
-                .map(User::getId)
+                .map(Friendship::getFriendId)
                 .collect(Collectors.toSet()));
 
         log.info("Added new friend");
@@ -116,4 +123,19 @@ public class UserService {
         updateUser = userStorage.update(updateUser);
         return UserMapper.mapToUserDto(updateUser);
     }
+
+    private boolean checkAndUpdateFriendshipStatus(Integer id, Integer friendId, List<Friendship> friendFriends,
+                                                   boolean accept) {
+        if (friendFriends.stream().anyMatch(friend -> friend.getFriendId() == (id))) {
+            friendshipRepository.updateStatus(friendId, id, accept);
+        } else {
+            accept = !accept;
+        }
+        return accept;
+    }
+
+    private boolean checkFriendshipExists(List<Friendship> userFriends, Integer userId, Integer friendId) {
+        return userFriends.stream().anyMatch(friend -> friend.getFriendId() == (friendId));
+    }
+
 }

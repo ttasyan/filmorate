@@ -12,17 +12,17 @@ import java.util.*;
 @RequiredArgsConstructor
 public class GenreService {
     private final GenreRepository genreRepository;
-    private Map<Integer, Genre> genres = new HashMap<>();
 
     public Collection<Genre> allGenres() {
-        return genres.values();
+        return genreRepository.allGenres();
     }
 
     public Genre getGenreById(int id) {
 
-        if (!genres.containsKey(id)) {
-            throw new NotFoundException("Рейтинг с заданным id не найден");
+        try {
+            return genreRepository.findById(id);
+        } catch (Exception e) {
+            throw new NotFoundException("Жанр с заданным id не найден");
         }
-        return genres.get(id);
     }
 }

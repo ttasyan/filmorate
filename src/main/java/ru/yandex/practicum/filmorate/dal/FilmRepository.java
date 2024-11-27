@@ -21,13 +21,13 @@ public class FilmRepository extends BaseRepository<Film> {
     }
 
     private static final String FIND_ALL_QUERY = "SELECT * FROM films";
-    private static final String FIND_POPULAR_QUERY = "SELECT f.*, COUNT(l.id) AS likes_count FROM films f " +
-            "LEFT JOIN likes l ON f.id = l.film_id" +
+    private static final String FIND_POPULAR_QUERY = "SELECT f.*, COUNT(l.user_id) AS likes_count FROM films f " +
+            "LEFT JOIN likes l ON f.film_id = l.film_id" +
             "GROUP BY f.id ORDER BY likes_count DESC LIMIT ?";
-    private static final String INSERT_QUERY = "INSERT INTO films(name, description, release_date, duration, genres, mpa)" +
-            "VALUES (?, ?, ?, ?, ?, ?) returning id";
+    private static final String INSERT_QUERY = "INSERT INTO films(name, description, release_date, duration, mpa_id)" +
+            "VALUES (?, ?, ?, ?, ?) returning id";
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, " +
-            "duration = ?, genres = ?, mpa = ? WHERE id = ?";
+            "duration = ?, mpa = ? WHERE film_id = ?";
     private static final String ALL_GENRES_FILMS_QUERY = "SELECT * FROM film_genre fg, " +
             "genre g WHERE fg.genre_id = g.genre_id";
 

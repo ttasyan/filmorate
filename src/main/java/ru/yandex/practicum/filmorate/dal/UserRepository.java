@@ -15,9 +15,9 @@ public class UserRepository extends BaseRepository<User> {
 
     private static final String FIND_ALL_QUERY = "SELECT * FROM users";
     private static final String INSERT_QUERY = "INSERT INTO users(login, name, email, birthday)" +
-            "VALUES (?, ?, ?, ?) returning id";
-    private static final String UPDATE_QUERY = "UPDATE users SET login = ?, name = ?, email = ?, birthday = ? WHERE id = ?";
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE id =?";
+            "VALUES (?, ?, ?, ?) returning user_id";
+    private static final String UPDATE_QUERY = "UPDATE users SET login = ?, name = ?, email = ?, birthday = ? WHERE user_id = ?";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE user_id =?";
 
     public User findUserById(int id) {
         return findOne(FIND_BY_ID_QUERY, id);

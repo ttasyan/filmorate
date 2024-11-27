@@ -14,6 +14,7 @@ public class FriendshipRowMapper implements RowMapper<Friendship> {
         Friendship friendship = Friendship.builder().build();
         friendship.setUserId(resultSet.getInt("user_id"));
         friendship.setFriendId(resultSet.getInt("friend_id"));
+        friendship.setStatus(resultSet.getBoolean("status"));
         return friendship;
     }
 }

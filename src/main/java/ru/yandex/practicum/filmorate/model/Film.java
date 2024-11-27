@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -31,7 +32,8 @@ public class Film {
     private Integer duration;
     @Builder.Default
     private Set<Integer> likes = new HashSet<>();
-    private List<Genre> genres = new ArrayList<>();
+    private List<@Valid Genre> genres = new ArrayList<>();
+    @Valid
     private Mpa mpa;
 
     public void addLike(Integer filmId) {
