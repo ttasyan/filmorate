@@ -1,89 +1,66 @@
 package ru.yandex.practicum.filmorate;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 
 
 @JdbcTest
 @AutoConfigureTestDatabase
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmorateApplicationTests {
-//	@Autowired
-//	private JdbcTemplate jdbcTemplate;
-//	private  UserRepository userRepository;
+//    @Autowired
+//    private JdbcTemplate jdbcTemplate;
+//    private FilmRepository filmRepository;
 //
-//	@BeforeEach
-//	public void setUp() {
-//		RowMapper<User> userRowMapper = new BeanPropertyRowMapper<>(User .class);
-//		userRepository = new UserRepository(jdbcTemplate, userRowMapper);
+//    @BeforeEach
+//    @Sql("classpath:schema.sql")
+//    public void setUp() {
+//        filmRepository = new FilmRepository(jdbcTemplate, new BeanPropertyRowMapper<>(Film.class));
+//    }
 //
-//		jdbcTemplate.execute("CREATE TABLE users (id SERIAL PRIMARY KEY, login VARCHAR(255), name VARCHAR(255), email VARCHAR(255), birthday DATE)");
-//		jdbcTemplate.execute("INSERT INTO users (login, name, email, birthday) VALUES ('testLogin', 'Test User', 'test@example.com', '2000-01-01')");
-//		jdbcTemplate.execute("INSERT INTO users (login, name, email, birthday) VALUES ('friendLogin', 'Friend User', 'friend@example.com', '2000-01-02')");
-//	}
+//    @Test
+//    public void testAddFilm() {
+//        Film film = new Film();
+//        film.setName("Test Film");
+//        film.setDescription("Test Description");
+//        film.setReleaseDate(LocalDate.of(2023, 1, 1));
+//        film.setDuration(120);
+//        film.setMpa(new Mpa(1, "PG"));
 //
-//	@Test
-//	public void testFindUserById() {
+//        Film addedFilm = filmRepository.addFilm(film);
+//        assertNotNull(addedFilm);
+//        assertNotNull(addedFilm.getId());
+//        assertEquals("Test Film", addedFilm.getName());
+//        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT * FROM films WHERE film_id = ?", addedFilm.getId());
+//        assertTrue(rowSet.next());
+//        assertEquals("Test Film", rowSet.getString("name"));
+//    }
 //
-//		User userOptional = userRepository.findUserById(1);
+//    @Test
+//    public void testUpdateFilm() {
+//        Film film = new Film();
+//        film.setName("Test Film");
+//        film.setDescription("Test Description");
+//        film.setReleaseDate(LocalDate.of(2023, 1, 1));
+//        film.setDuration(120);
+//        film.setMpa(new Mpa(1, "PG"));
+//        Film addedFilm = filmRepository.addFilm(film);
 //
-//		ObjectAssert<User> id = assertThat(userOptional);
+//        addedFilm.setName("Updated Film");
+//        addedFilm.setDescription(" Film");
+//        addedFilm.setReleaseDate(LocalDate.of(2023, 1, 23));
+//        addedFilm.setDuration(121);
 //
-//                             assertThat(userOptional).hasFieldOrPropertyWithValue("id", 1);
 //
-//				;
-//	}
-//	@Test
-//	public void testAllUsers() {
-//		Collection<User> users = userRepository.allUsers();
+//        Film updatedFilm = filmRepository.update(addedFilm);
 //
-//		assertThat(users).hasSize(2);
-//	}
+//        assertNotNull(updatedFilm);
+//        assertEquals("Updated Film", updatedFilm.getName());
 //
-//	@Test
-//	public void testCreate() {
-//		User user =  User.builder()
-//		.login("newUser ")
-//		.name("New User")
-//		.email("new@example.com")
-//		.birthday(LocalDate.parse("2000-01-03"))
-//				.build();
-//
-//		User createdUser  = userRepository.create(user);
-//
-//		assertThat(createdUser ).isNotNull();
-//		assertThat(createdUser .getId()).isNotNull();
-//
-//		User foundUser  = userRepository.findUserById(createdUser .getId());
-//
-//						assertThat(foundUser).hasFieldOrPropertyWithValue("login", "newUser ")
-//								.hasFieldOrPropertyWithValue("name", "New User")
-//								.hasFieldOrPropertyWithValue("email", "new@example.com")
-//								.hasFieldOrPropertyWithValue("birthday", "2000-01-03")
-//				;
-//	}
-//
-//	@Test
-//	public void testUpdate() {
-//		User user = User.builder()
-//		.id(1)
-//		.login("updatedLogin")
-//		.name("Updated User")
-//		.email("updated@example.com")
-//		.birthday(LocalDate.parse("2000-01-04"))
-//				.build();
-//
-//		userRepository.update(user);
-//
-//		User updatedUser  = userRepository.findUserById(1);
-//
-//						assertThat(updatedUser).hasFieldOrPropertyWithValue("login", "updatedLogin")
-//								.hasFieldOrPropertyWithValue("name", "Updated User")
-//								.hasFieldOrPropertyWithValue("email", "updated@example.com")
-//								.hasFieldOrPropertyWithValue("birthday", "2000-01-04")
-//				;
-//	}
+//        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT * FROM films WHERE film_id = ?", updatedFilm.getId());
+//        assertTrue(rowSet.next());
+//        assertEquals("Updated Film", rowSet.getString("name"));
+//    }
+
+
 }
 

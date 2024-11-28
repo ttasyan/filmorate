@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 
 import java.sql.PreparedStatement;
@@ -41,7 +42,7 @@ public class BaseRepository<T> {
         }
     }
 
-    protected Integer insert(String query, Object... params) {
+    protected int insert(String query, Object... params) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(connection -> {
             PreparedStatement ps = connection
@@ -57,7 +58,7 @@ public class BaseRepository<T> {
         if (id != null) {
             return id;
         } else {
-            throw new InternalException("Не удалось сохранить данные");
+            throw new InternalServerException("Не удалось сохранить данные");
         }
     }
 }

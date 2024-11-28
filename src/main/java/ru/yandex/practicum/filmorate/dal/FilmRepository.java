@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.*;
 
 
@@ -25,9 +26,9 @@ public class FilmRepository extends BaseRepository<Film> {
             "LEFT JOIN likes l ON f.film_id = l.film_id" +
             "GROUP BY f.id ORDER BY likes_count DESC LIMIT ?";
     private static final String INSERT_QUERY = "INSERT INTO films(name, description, release_date, duration, mpa_id)" +
-            "VALUES (?, ?, ?, ?, ?) returning id";
+            "VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, " +
-            "duration = ?, mpa = ? WHERE film_id = ?";
+            "duration = ? WHERE film_id = ?";
     private static final String ALL_GENRES_FILMS_QUERY = "SELECT * FROM film_genre fg, " +
             "genre g WHERE fg.genre_id = g.genre_id";
 
@@ -55,28 +56,23 @@ public class FilmRepository extends BaseRepository<Film> {
 
     public Film addFilm(Film film) {
         Integer id = insert(INSERT_QUERY,
-                film.getDuration(),
                 film.getName(),
                 film.getDescription(),
-                film.getReleaseDate(),
+                Timestamp.valueOf(film.getReleaseDate().atStartOfDay()),
+                film.getDuration(),
                 film.getMpa().getId());
         film.setId(id);
-        if (!film.getGenres().isEmpty()) {
-            saveGenres(film);
-        }
         return film;
     }
 
     public Film update(Film newFilm) {
-        update(UPDATE_QUERY, newFilm.getDuration(),
+        update(UPDATE_QUERY,
                 newFilm.getName(),
                 newFilm.getDescription(),
-                newFilm.getReleaseDate(),
-                newFilm.getMpa().getId(),
+                Timestamp.valueOf(newFilm.getReleaseDate().atStartOfDay()),
+                newFilm.getDuration(),
                 newFilm.getId());
-        if (!newFilm.getGenres().isEmpty()) {
-            saveGenres(newFilm);
-        }
+
         return newFilm;
 
     }

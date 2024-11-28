@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.dal;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 
 import java.util.List;
@@ -22,7 +23,11 @@ public class FilmGenreRepository extends BaseRepository<FilmGenre> {
     }
 
     public void addGenreToFilm(Integer filmId, Integer genreId) {
-        insert(INSERT_QUERY, filmId, genreId);
+        if (insert(INSERT_QUERY, filmId, genreId) > 0) {
+
+        } else {
+            throw new InternalServerException("Не удалось добавить жанр id:" + genreId);
+        }
 
     }
 }

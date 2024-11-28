@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.dal.FilmGenreRepository;
 import ru.yandex.practicum.filmorate.dal.FilmLikeRepository;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
@@ -65,10 +66,7 @@ public class FilmService {
     public FilmDto deleteLike(Integer id, Integer userId) {
         log.info("Starting to delete like");
         Film film = filmStorage.getFilms().get(id);
-        if (film == null) {
-            log.error("Film not found");
-            throw new NotFoundException("Фильм с id = " + id + " не найден");
-        }
+
         if (userStorage.getUserById(userId) == null || userStorage.getUserById(id) == null) {
             log.error("User not found");
             throw new NotFoundException("Юзер не найден");
@@ -117,14 +115,17 @@ public class FilmService {
                 }
                 filmGenreRepository.addGenreToFilm(newFilm.getId(), genre.getId());
             }
+        } else {
+            newFilm.setGenres(new ArrayList<>());
         }
         return FilmMapper.mapToFilmDto(newFilm);
     }
 
     public FilmDto update(UpdateFilmRequest request) {
         if (!request.hasId()) {
-            throw new NotFoundException("Не передан id фильма");
+            throw new InternalServerException("Не передан id фильма");
         }
+
         Film updateFilm = FilmMapper.updateFilmFields(filmStorage.getFilmById(request.getId()), request);
         updateFilm = filmStorage.update(updateFilm);
         return FilmMapper.mapToFilmDto(updateFilm);
