@@ -96,7 +96,6 @@ public class FilmService {
     }
 
     public Collection<FilmDto> allFilms() {
-
         return filmStorage.allFilms().stream()
                 .map(FilmMapper::mapToFilmDto)
                 .map(this::addGenresToFilmDto)
