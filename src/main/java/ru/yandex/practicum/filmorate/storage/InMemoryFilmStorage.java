@@ -7,9 +7,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
@@ -34,6 +32,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
         film.setId(getId());
         film.setLikes();
+        if (film.getGenres() == null) {
+            film.setGenres(new ArrayList<>());
+        }
         films.put(film.getId(), film);
         log.info("Added new film");
         return film;
@@ -42,7 +43,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film update(Film newFilm) {
         if (newFilm.getId() == null) {
-            throw new ValidationException("Id должен быть указан");
+            throw new NotFoundException("Id должен быть указан");
         }
 
         log.info("Updating film");
@@ -65,6 +66,12 @@ public class InMemoryFilmStorage implements FilmStorage {
             if (newFilm.getLikes() != null) {
                 oldFilm.setLikes(newFilm.getLikes());
             }
+            if (newFilm.getMpa() != null) {
+                oldFilm.setMpa(newFilm.getMpa());
+            }
+            if (newFilm.getGenres() != null) {
+                oldFilm.setGenres(newFilm.getGenres());
+            }
             log.info("Updated old film");
             return oldFilm;
         }
@@ -79,5 +86,24 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .max()
                 .orElse(0);
         return ++currentMaxId;
+    }
+
+    @Override
+    public Film getFilmById(Integer id) {
+        return films.get(id);
+    }
+
+    @Override
+    public List<Film> mostLiked(Integer count) {
+        List<Film> allFilms = new ArrayList<>(getFilms().values().stream()
+                .sorted(Comparator.comparingInt(f -> f.getLikes().size()))
+                .toList()
+                .reversed());
+
+        List<Film> topFilms = new ArrayList<>();
+        for (int i = 0; i < Math.min(count, allFilms.size()); i++) {
+            topFilms.add(allFilms.get(i));
+        }
+        return topFilms;
     }
 }
