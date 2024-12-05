@@ -88,19 +88,8 @@ public class UserService {
     }
 
     public List<UserDto> commonFriends(Integer id, Integer otherId) {
-        User user1 = userStorage.getUserById(id);
-        User user2 = userStorage.getUserById(otherId);
-
-        if (user1 == null || user2 == null) {
-            throw new NotFoundException("One or both users not found");
-        }
-        Set<Integer> friends1 = user1.getFriendIds();
-
-        Set<Integer> friends2 = user2.getFriendIds();
-
-        friends1.retainAll(friends2);
-
-        return friends1.stream()
+        return friendshipRepository.commonFriends(id, otherId).stream()
+                .map(Friendship::getFriendId)
                 .map(userStorage::getUserById)
                 .map(UserMapper::mapToUserDto)
                 .toList();

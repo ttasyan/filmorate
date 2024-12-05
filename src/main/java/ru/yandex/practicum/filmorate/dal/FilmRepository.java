@@ -17,9 +17,7 @@ import java.util.*;
 
 @Repository
 public class FilmRepository extends BaseRepository<Film> {
-    public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
-        super(jdbc, mapper);
-    }
+
 
     private static final String FIND_ALL_QUERY = "SELECT * FROM films";
     private static final String FIND_POPULAR_QUERY = "SELECT f.*, COUNT(l.user_id) AS likes_count FROM films f " +
@@ -31,6 +29,10 @@ public class FilmRepository extends BaseRepository<Film> {
             "duration = ? WHERE film_id = ?";
     private static final String ALL_GENRES_FILMS_QUERY = "SELECT * FROM film_genre fg, " +
             "genre g WHERE fg.genre_id = g.genre_id";
+
+    public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
+        super(jdbc, mapper);
+    }
 
     public Collection<Film> allFilms() {
         Collection<Film> films = findMany(FIND_ALL_QUERY);
@@ -91,7 +93,7 @@ public class FilmRepository extends BaseRepository<Film> {
     }
 
     private void genreIdValidate(List<Genre> genres) {
-        Integer genreMaxId = jdbc.queryForObject("SELECT COUNT(*) FROM mpa", Integer.class);
+        Integer genreMaxId = jdbc.queryForObject("SELECT COUNT(*) FROM genre", Integer.class);
         if (genreMaxId == null) {
             return;
         }

@@ -1,7 +1,23 @@
 package ru.yandex.practicum.filmorate;
 
+//import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.Test;
+//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+//import org.springframework.jdbc.core.BeanPropertyRowMapper;
+//import org.springframework.jdbc.core.JdbcTemplate;
+//import org.springframework.jdbc.support.rowset.SqlRowSet;
+//import org.springframework.test.context.jdbc.Sql;
+//import ru.yandex.practicum.filmorate.dal.FilmRepository;
+//import ru.yandex.practicum.filmorate.model.Film;
+//import ru.yandex.practicum.filmorate.model.Genre;
+//import ru.yandex.practicum.filmorate.model.Mpa;
+//
+//import java.time.LocalDate;
+//import java.util.List;
+//
+//import static org.junit.jupiter.api.Assertions.*;
 
 
 @JdbcTest
@@ -25,6 +41,7 @@ class FilmorateApplicationTests {
 //        film.setReleaseDate(LocalDate.of(2023, 1, 1));
 //        film.setDuration(120);
 //        film.setMpa(new Mpa(1, "PG"));
+//        film.setGenres(List.of(new Genre(1, "Комедия")));
 //
 //        Film addedFilm = filmRepository.addFilm(film);
 //        assertNotNull(addedFilm);
@@ -33,6 +50,7 @@ class FilmorateApplicationTests {
 //        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT * FROM films WHERE film_id = ?", addedFilm.getId());
 //        assertTrue(rowSet.next());
 //        assertEquals("Test Film", rowSet.getString("name"));
+//        assertEquals("Комедия", rowSet.getString("genres"));
 //    }
 //
 //    @Test
@@ -43,6 +61,7 @@ class FilmorateApplicationTests {
 //        film.setReleaseDate(LocalDate.of(2023, 1, 1));
 //        film.setDuration(120);
 //        film.setMpa(new Mpa(1, "PG"));
+//        film.setGenres(List.of(new Genre(1, "Комедия")));
 //        Film addedFilm = filmRepository.addFilm(film);
 //
 //        addedFilm.setName("Updated Film");

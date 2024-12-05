@@ -72,24 +72,13 @@ public class FilmService {
             throw new NotFoundException("Юзер не найден");
         }
 
-//        film.getLikes().remove(userId);
-//        filmStorage.update(film);
         filmLikeRepository.deleteLike(id, userId);
         log.info("Like deleted");
         return FilmMapper.mapToFilmDto(film);
     }
 
     public List<FilmDto> mostLiked(Integer count) {
-        List<Film> allFilms = new ArrayList<>(filmStorage.getFilms().values().stream()
-                .sorted(Comparator.comparingInt(f -> f.getLikes().size()))
-                .toList()
-                .reversed());
-
-        List<Film> topFilms = new ArrayList<>();
-        for (int i = 0; i < Math.min(count, allFilms.size()); i++) {
-            topFilms.add(allFilms.get(i));
-        }
-        return topFilms.stream()
+        return filmStorage.mostLiked(count).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .map(this::addGenresToFilmDto)
                 .toList();

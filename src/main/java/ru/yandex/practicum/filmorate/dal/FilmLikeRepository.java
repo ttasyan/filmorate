@@ -7,12 +7,13 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 @Repository
 public class FilmLikeRepository extends BaseRepository<Film> {
-    public FilmLikeRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
-        super(jdbc, mapper);
-    }
 
     private static final String ADD_QUERY = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
     private static final String DELETE_QUERY = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
+
+    public FilmLikeRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
+        super(jdbc, mapper);
+    }
 
     public void addLike(Integer id, Integer userId) {
         insert(ADD_QUERY, id, userId);

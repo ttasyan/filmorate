@@ -7,10 +7,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
@@ -94,5 +91,19 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getFilmById(Integer id) {
         return films.get(id);
+    }
+
+    @Override
+    public List<Film> mostLiked(Integer count) {
+        List<Film> allFilms = new ArrayList<>(getFilms().values().stream()
+                .sorted(Comparator.comparingInt(f -> f.getLikes().size()))
+                .toList()
+                .reversed());
+
+        List<Film> topFilms = new ArrayList<>();
+        for (int i = 0; i < Math.min(count, allFilms.size()); i++) {
+            topFilms.add(allFilms.get(i));
+        }
+        return topFilms;
     }
 }

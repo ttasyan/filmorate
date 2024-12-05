@@ -9,12 +9,13 @@ import java.util.Collection;
 
 @Repository
 public class GenreRepository extends BaseRepository<Genre> {
-    public GenreRepository(JdbcTemplate jdbc, RowMapper<Genre> mapper) {
-        super(jdbc, mapper);
-    }
 
     private static final String FIND_ALL_QUERY = "SELECT * FROM genre";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM genre WHERE genre_id = ?";
+
+    public GenreRepository(JdbcTemplate jdbc, RowMapper<Genre> mapper) {
+        super(jdbc, mapper);
+    }
 
     public Collection<Genre> allGenres() {
         return findMany(FIND_ALL_QUERY);

@@ -9,9 +9,6 @@ import java.util.List;
 
 @Repository
 public class FriendshipRepository extends BaseRepository<Friendship> {
-    public FriendshipRepository(JdbcTemplate jdbc, RowMapper<Friendship> mapper) {
-        super(jdbc, mapper);
-    }
 
     private static final String ADD_QUERY = "INSERT INTO friends(user_id, friend_id, status) VALUES (?, ?, ?)";
     private static final String DELETE_QUERY = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
@@ -21,6 +18,10 @@ public class FriendshipRepository extends BaseRepository<Friendship> {
             "JOIN friends f2 ON u.user_id = f2.friend_id WHERE f1.user_id = ? AND f2.user_id = ?";
     private static final String UPDATE_FRIEND_BY_ID = "UPDATE friends SET status = ? " +
             "WHERE user_id = ? AND friend_id = ?";
+
+    public FriendshipRepository(JdbcTemplate jdbc, RowMapper<Friendship> mapper) {
+        super(jdbc, mapper);
+    }
 
     public Friendship addFriend(Integer userId, Integer friendId, boolean status) {
         Friendship friendship = Friendship.builder()
