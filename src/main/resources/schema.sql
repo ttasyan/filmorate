@@ -1,7 +1,14 @@
+drop table if exists film_genre;
+    drop table if exists friends;
+    drop table if exists likes;
+    drop table if exists films;
+    drop table if exists users;
+    drop table if exists mpa;
+    drop table if exists genre;
+    
 CREATE TABLE genre (
     genre_id INT PRIMARY KEY,
     name VARCHAR(255) NOT NULL
-    foreign key (
 );
 
 
@@ -33,7 +40,7 @@ CREATE TABLE films (
 CREATE TABLE friends (
     user_id INT,
     friend_id INT,
-    status VARCHAR(50) NOT NULL,
+    status boolean NOT NULL,
     PRIMARY KEY (user_id, friend_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (friend_id) REFERENCES users(user_id)
@@ -50,7 +57,8 @@ CREATE TABLE likes (
 
 create table film_genre (
     film_id INT,
-    genre_id INT
+    genre_id INT,
+    PRIMARY KEY (film_id, genre_id),
     foreign key (film_id) REFERENCES films(film_id),
     FOREIGN KEY (genre_id) REFERENCES genre(genre_id)
     );
