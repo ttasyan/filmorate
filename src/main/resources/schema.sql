@@ -1,11 +1,12 @@
 CREATE TABLE genre (
     genre_id INT PRIMARY KEY,
     name VARCHAR(255) NOT NULL
+    foreign key (
 );
 
 
-CREATE TABLE rating (
-    rating_id INT PRIMARY KEY,
+CREATE TABLE mpa (
+    mpa_id INT PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
 
@@ -24,10 +25,8 @@ CREATE TABLE films (
     description VARCHAR(255),
     release_date DATE NOT NULL,
     duration INT NOT NULL,
-    genre_id INT,
-    rating_id INT,
-    FOREIGN KEY (genre_id) REFERENCES genre(genre_id),
-    FOREIGN KEY (rating_id) REFERENCES rating(rating_id)
+    mpa_id INT,
+    FOREIGN KEY (mpa_id) REFERENCES mpa(mpa_id)
 );
 
 
@@ -48,3 +47,10 @@ CREATE TABLE likes (
     FOREIGN KEY (film_id) REFERENCES films(film_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+create table film_genre (
+    film_id INT,
+    genre_id INT
+    foreign key (film_id) REFERENCES films(film_id),
+    FOREIGN KEY (genre_id) REFERENCES genre(genre_id)
+    );
