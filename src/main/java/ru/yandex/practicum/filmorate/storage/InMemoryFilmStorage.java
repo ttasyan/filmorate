@@ -99,6 +99,11 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .sorted(Comparator.comparingInt(f -> f.getLikes().size()))
                 .toList()
                 .reversed());
+        for (int i = 0; i < allFilms.size(); i++) {
+            if (allFilms.get(i).getLikes().isEmpty()) {
+                allFilms.remove(getFilmById(i));
+            }
+        }
 
         List<Film> topFilms = new ArrayList<>();
         for (int i = 0; i < Math.min(count, allFilms.size()); i++) {

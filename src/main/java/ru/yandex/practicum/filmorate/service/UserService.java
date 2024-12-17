@@ -32,7 +32,7 @@ public class UserService {
 
     public UserDto deleteFriend(Integer id, Integer friendId) {
         log.info("Starting to delete a friend");
-
+        userStorage.getUserById(id).removeFriend(friendId);
         UserDto response = UserMapper.mapToUserDto(userStorage.getUserById(id));
         UserDto friend = UserMapper.mapToUserDto(userStorage.getUserById(friendId));
 
@@ -55,6 +55,7 @@ public class UserService {
 
     public UserDto addFriend(Integer id, Integer friendId) {
         log.info("Starting to add new friend");
+        userStorage.getUserById(id).addFriend(friendId);
         UserDto response = UserMapper.mapToUserDto(userStorage.getUserById(id));
         UserDto friend = UserMapper.mapToUserDto(userStorage.getUserById(friendId));
         List<Friendship> userList = friendshipRepository.allFriends(id);
@@ -64,11 +65,10 @@ public class UserService {
                     + friendId + " в друзья");
         }
         boolean status = checkAndUpdateFriendshipStatus(id, friendId, friendList, true);
-        Friendship friendship = friendshipRepository.addFriend(id, friendId, status);
-        userList.add(friendship);
         response.setFriendIds(userList.stream()
                 .map(Friendship::getFriendId)
                 .collect(Collectors.toSet()));
+
 
         log.info("Added new friend");
         return response;
@@ -88,13 +88,24 @@ public class UserService {
     }
 
     public List<UserDto> commonFriends(Integer id, Integer otherId) {
-        return friendshipRepository.commonFriends(id, otherId).stream()
-                .map(Friendship::getFriendId)
+        User user1 = userStorage.getUserById(id);
+        User user2 = userStorage.getUserById(otherId);
+
+        if (user1 == null || user2 == null) {
+            throw new NotFoundException("One or both users not found");
+        }
+        Set<Integer> friends1 = user1.getFriendIds();
+
+        Set<Integer> friends2 = user2.getFriendIds();
+
+        friends1.retainAll(friends2);
+        return friends1.stream()
                 .map(userStorage::getUserById)
                 .map(UserMapper::mapToUserDto)
                 .toList();
 
     }
+
 
     public List<UserDto> allUsers() {
         return userStorage.allUsers().stream()

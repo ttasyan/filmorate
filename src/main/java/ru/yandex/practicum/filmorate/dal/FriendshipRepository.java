@@ -14,8 +14,8 @@ public class FriendshipRepository extends BaseRepository<Friendship> {
     private static final String DELETE_QUERY = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
     private static final String FIND_ALL_FRIENDS_QUERY = "SELECT u.* FROM users u JOIN friends f ON u.user_id = f.friend_id " +
             "WHERE f.user_id = ?";
-    private static final String FIND_COMMON_FRIENDS_QUERY = "SELECT u.* FROM users u JOIN friends f1 ON u.user_id = f1.friend_id " +
-            "JOIN friends f2 ON u.user_id = f2.friend_id WHERE f1.user_id = ? AND f2.user_id = ?";
+    private static final String FIND_COMMON_FRIENDS_QUERY = "SELECT * FROM friends WHERE USER_ID = ? AND FRIEND_ID " +
+            "IN (SELECT FRIEND_ID FROM friends WHERE USER_ID = ?)";
     private static final String UPDATE_FRIEND_BY_ID = "UPDATE friends SET status = ? " +
             "WHERE user_id = ? AND friend_id = ?";
 

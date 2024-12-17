@@ -20,15 +20,17 @@ public class FilmRepository extends BaseRepository<Film> {
 
 
     private static final String FIND_ALL_QUERY = "SELECT * FROM films";
-    private static final String FIND_POPULAR_QUERY = "SELECT f.*, COUNT(l.user_id) AS likes_count FROM films f " +
-            "LEFT JOIN likes l ON f.film_id = l.film_id" +
-            "GROUP BY f.id ORDER BY likes_count DESC LIMIT ?";
+    private static final String FIND_POPULAR_QUERY = "SELECT f.*, m.name FROM films f " +
+            "LEFT JOIN likes l ON f.film_id = l.film_id JOIN mpa m ON f.mpa_id = m.mpa_id"     +
+            "GROUP BY f.film_id ORDER BY COUNT(l.user_id) DESC LIMIT ?";
     private static final String INSERT_QUERY = "INSERT INTO films(name, description, release_date, duration, mpa_id)" +
             "VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, " +
             "duration = ? WHERE film_id = ?";
     private static final String ALL_GENRES_FILMS_QUERY = "SELECT * FROM film_genre fg, " +
             "genre g WHERE fg.genre_id = g.genre_id";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM films f JOIN mpa m on f.mpa_id=" +
+            "m.mpa_id WHERE film_id = ?";
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -127,5 +129,7 @@ public class FilmRepository extends BaseRepository<Film> {
                 });
     }
 
-
+    public Film getFilmById(Integer filmId) {
+        return findOne(FIND_BY_ID_QUERY, filmId);
+    }
 }

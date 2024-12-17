@@ -4,8 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.FilmGenreRepository;
-import ru.yandex.practicum.filmorate.dal.FilmLikeRepository;
+import ru.yandex.practicum.filmorate.dal.*;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
@@ -15,6 +14,7 @@ import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -26,15 +26,22 @@ public class FilmService {
     private final UserStorage userStorage;
     private final FilmGenreRepository filmGenreRepository;
     private final FilmLikeRepository filmLikeRepository;
+    private final MpaRepository mpaRepository;
+    private final GenreRepository genreRepository;
+    private final FilmRepository filmRepository;
     private static final Logger log = LoggerFactory.getLogger("FilmService");
 
     @Autowired
     public FilmService(FilmStorage filmStorage, UserStorage userStorage,
-                       FilmGenreRepository filmGenreRepository, FilmLikeRepository filmLikeRepository) {
+                       FilmGenreRepository filmGenreRepository, FilmLikeRepository filmLikeRepository,
+                       MpaRepository mpaRepository, GenreRepository genreRepository, FilmRepository filmRepository) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.filmGenreRepository = filmGenreRepository;
         this.filmLikeRepository = filmLikeRepository;
+        this.mpaRepository = mpaRepository;
+        this.genreRepository = genreRepository;
+        this.filmRepository = filmRepository;
     }
 
     public FilmDto addLike(Integer id, Integer userId) {
@@ -54,7 +61,6 @@ public class FilmService {
         }
         film.addLike(userId);
         filmStorage.update(film);
-        filmLikeRepository.addLike(id, userId);
         FilmDto response = FilmMapper.mapToFilmDto(film);
         response.getLikes().add(userId);
 
@@ -96,16 +102,9 @@ public class FilmService {
         if (newFilm.getId() == null) {
             throw new ValidationException("Фильм не был добавлен корректно, ID равен null");
         }
-        if (newFilm.getGenres() != null) {
-            for (Genre genre : newFilm.getGenres()) {
-                if (genre.getId() == null) {
-                    throw new ValidationException("Жанр не имеет ID");
-                }
-                filmGenreRepository.addGenreToFilm(newFilm.getId(), genre.getId());
-            }
-        } else {
-            newFilm.setGenres(new ArrayList<>());
-        }
+        filmRepository.addFilm(film);
+        setMpa(film);
+        setGenres(film);
         return FilmMapper.mapToFilmDto(newFilm);
     }
 
@@ -116,8 +115,14 @@ public class FilmService {
 
         Film updateFilm = FilmMapper.updateFilmFields(filmStorage.getFilmById(request.getId()), request);
         updateFilm = filmStorage.update(updateFilm);
+        setMpa(updateFilm);
+        setGenres(updateFilm);
         return FilmMapper.mapToFilmDto(updateFilm);
 
+    }
+
+    public FilmDto getWithGenre(Integer id) {
+        return FilmMapper.mapToFilmDto(filmStorage.getFilmById(id));
     }
 
     private FilmDto addGenresToFilmDto(FilmDto filmDto) {
@@ -128,4 +133,23 @@ public class FilmService {
         filmDto.setGenres(filmGenresList);
         return filmDto;
     }
+
+    private void setMpa(Film film) {
+        if (film.getMpa() != null) {
+            Integer mpaId = film.getMpa().getId();
+            Mpa mpa = mpaRepository.findById(mpaId);
+            film.setMpa(mpa);
+        }
+    }
+
+    private void setGenres(Film film) {
+        if (film.getGenres() != null) {
+            List<Genre> genres = film.getGenres().stream()
+                    .map(genre -> genreRepository.findById(genre.getId()))
+                    .distinct()
+                    .toList();
+            film.setGenres(genres);
+        }
+    }
+
 }
