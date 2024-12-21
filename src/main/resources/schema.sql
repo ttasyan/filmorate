@@ -7,19 +7,19 @@ drop table if exists film_genre;
     drop table if exists genre;
     
 CREATE TABLE genre (
-    genre_id INT PRIMARY KEY,
+    genre_id INT generated always as identity PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
 
 
 CREATE TABLE mpa (
-    mpa_id INT PRIMARY KEY,
+    mpa_id INT generated always as identity PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
 
 
 CREATE TABLE users (
-    user_id INT PRIMARY KEY,
+    user_id INT generated always as identity PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     login VARCHAR(255) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE films (
-    film_id INT PRIMARY KEY,
+    film_id INT generated always as identity PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255),
     release_date DATE NOT NULL,
