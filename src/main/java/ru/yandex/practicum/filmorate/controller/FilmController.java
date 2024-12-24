@@ -26,12 +26,12 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public FilmDto getWithGenre(@PathVariable Integer id) {
+    public FilmDto getWithGenre(@PathVariable int id) {
         return filmService.getWithGenre(id);
     }
 
     @GetMapping("/popular")
-    public List<FilmDto> popularFilms(@RequestParam(required = false, defaultValue = "10") Integer count) {
+    public List<FilmDto> popularFilms(@RequestParam(defaultValue = "10") Integer count) {
         return filmService.mostLiked(count);
     }
 
