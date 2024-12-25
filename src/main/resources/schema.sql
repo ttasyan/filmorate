@@ -50,7 +50,6 @@ CREATE TABLE friends (
 CREATE TABLE likes (
     film_id INT,
     user_id INT,
-    PRIMARY KEY (film_id, user_id),
     FOREIGN KEY (film_id) REFERENCES films(film_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
@@ -58,7 +57,6 @@ CREATE TABLE likes (
 create table film_genre (
     film_id INT,
     genre_id INT,
-    PRIMARY KEY (film_id, genre_id),
     foreign key (film_id) REFERENCES films(film_id),
     FOREIGN KEY (genre_id) REFERENCES genre(genre_id)
     );
