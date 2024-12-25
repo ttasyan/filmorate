@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -18,38 +20,38 @@ public class UserController {
 
 
     @GetMapping
-    public Collection<User> allUsers() {
+    public Collection<UserDto> allUsers() {
         return userService.allUsers();
     }
 
     @GetMapping("/{id}/friends")
-    public Collection<User> allFriends(@PathVariable Integer id) {
+    public Collection<UserDto> allFriends(@PathVariable Integer id) {
         return userService.allFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> commonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+    public List<UserDto> commonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
         return userService.commonFriends(id, otherId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User create(@Valid @RequestBody User user) {
+    public UserDto create(@Valid @RequestBody User user) {
         return userService.create(user);
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
+    public UserDto update(@RequestBody UpdateUserRequest user) {
         return userService.update(user);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public User addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+    public UserDto addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         return userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public User deleteFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+    public UserDto deleteFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         return userService.deleteFriend(id, friendId);
     }
 }

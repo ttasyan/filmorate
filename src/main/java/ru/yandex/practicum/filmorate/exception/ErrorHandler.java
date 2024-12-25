@@ -19,4 +19,9 @@ public class ErrorHandler {
         return new ErrorResponse("Некорректное значение параметра " + e.getParameter() + ": " + e.getReason());
     }
 
+    @ExceptionHandler(InternalServerException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleInternalServerException(InternalServerException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }
