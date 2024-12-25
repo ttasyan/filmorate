@@ -5,10 +5,10 @@ USING (VALUES
     ('PG-13'),
     ('R'),
     ('NC-17')
-) AS source(name)
-ON mt.name = source.name
+) AS source(mpa_name)
+ON mt.mpa_name = source.mpa_name
 WHEN NOT MATCHED THEN
-    INSERT (name) VALUES (source.name);
+    INSERT (mpa_name) VALUES (source.mpa_name);
 
 MERGE INTO genre AS gt
 USING (VALUES
@@ -18,7 +18,8 @@ USING (VALUES
 ('Триллер'),
 ('Документальный'),
 ('Боевик')
-) AS source(name)
-ON gt.name = source.name
+) AS source(genre_name)
+ON gt.genre_name = source.genre_name
 WHEN NOT MATCHED THEN
-    INSERT (name) VALUES (source.name);
+    INSERT (genre_name) VALUES (source.genre_name);
+
