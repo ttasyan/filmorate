@@ -8,13 +8,13 @@ drop table if exists film_genre;
     
 CREATE TABLE genre (
     genre_id INT generated always as identity PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    genre_name VARCHAR(255) NOT NULL
 );
 
 
 CREATE TABLE mpa (
     mpa_id INT generated always as identity PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    mpa_name VARCHAR(255) NOT NULL
 );
 
 
