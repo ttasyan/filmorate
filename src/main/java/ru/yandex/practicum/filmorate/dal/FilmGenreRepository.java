@@ -23,9 +23,8 @@ public class FilmGenreRepository extends BaseRepository<FilmGenre> {
     }
 
     public void addGenreToFilm(Integer filmId, Integer genreId) {
-        if (insert(INSERT_QUERY, filmId, genreId) > 0) {
-            insert(INSERT_QUERY, filmId, genreId);
-        } else {
+        int rowsAffected = jdbc.update(INSERT_QUERY, filmId, genreId);
+        if (rowsAffected == 0) {
             throw new InternalServerException("Не удалось добавить жанр id:" + genreId);
         }
 

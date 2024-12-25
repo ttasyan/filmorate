@@ -16,7 +16,7 @@ public class FilmLikeRepository extends BaseRepository<Film> {
     }
 
     public void addLike(Integer id, Integer userId) {
-        insert(ADD_QUERY, id, userId);
+        jdbc.update(ADD_QUERY, id, userId);
     }
 
     public void deleteLike(Integer id, Integer userId) {

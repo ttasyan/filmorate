@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class FriendshipRowMapper implements RowMapper<Friendship> {
     @Override
     public Friendship mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        Friendship friendship = Friendship.builder().build();
+        Friendship friendship = new Friendship();
         friendship.setUserId(resultSet.getInt("user_id"));
         friendship.setFriendId(resultSet.getInt("friend_id"));
         friendship.setStatus(resultSet.getBoolean("status"));

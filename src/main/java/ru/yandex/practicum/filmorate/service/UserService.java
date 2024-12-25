@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.FriendshipRepository;
 import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
@@ -25,14 +26,14 @@ public class UserService {
 
 
     @Autowired
-    public UserService(UserStorage userStorage, FriendshipRepository friendshipRepository) {
+    public UserService(@Qualifier("userRepository") UserStorage userStorage,
+                       FriendshipRepository friendshipRepository) {
         this.userStorage = userStorage;
         this.friendshipRepository = friendshipRepository;
     }
 
     public UserDto deleteFriend(Integer id, Integer friendId) {
         log.info("Starting to delete a friend");
-        userStorage.getUserById(id).removeFriend(friendId);
         UserDto response = UserMapper.mapToUserDto(userStorage.getUserById(id));
         UserDto friend = UserMapper.mapToUserDto(userStorage.getUserById(friendId));
 
@@ -55,7 +56,6 @@ public class UserService {
 
     public UserDto addFriend(Integer id, Integer friendId) {
         log.info("Starting to add new friend");
-        userStorage.getUserById(id).addFriend(friendId);
         UserDto response = UserMapper.mapToUserDto(userStorage.getUserById(id));
         UserDto friend = UserMapper.mapToUserDto(userStorage.getUserById(friendId));
         List<Friendship> userList = friendshipRepository.allFriends(id);
@@ -65,6 +65,8 @@ public class UserService {
                     + friendId + " в друзья");
         }
         boolean status = checkAndUpdateFriendshipStatus(id, friendId, friendList, true);
+        friendshipRepository.addFriend(id, friendId, status);
+
         response.setFriendIds(userList.stream()
                 .map(Friendship::getFriendId)
                 .collect(Collectors.toSet()));
@@ -80,10 +82,7 @@ public class UserService {
             throw new NotFoundException("Юзер не найден");
         }
 
-        return user.getFriendIds().stream()
-                .map(userStorage::getUserById)
-                .map(UserMapper::mapToUserDto)
-                .toList();
+        return listFriendshipToListUserDto(friendshipRepository.allFriends(id));
 
     }
 
@@ -94,16 +93,7 @@ public class UserService {
         if (user1 == null || user2 == null) {
             throw new NotFoundException("One or both users not found");
         }
-        Set<Integer> friends1 = user1.getFriendIds();
-
-        Set<Integer> friends2 = user2.getFriendIds();
-
-        friends1.retainAll(friends2);
-        return friends1.stream()
-                .map(userStorage::getUserById)
-                .map(UserMapper::mapToUserDto)
-                .toList();
-
+        return listFriendshipToListUserDto(friendshipRepository.commonFriends(id, otherId));
     }
 
 
@@ -136,6 +126,14 @@ public class UserService {
 
     private boolean checkFriendshipExists(List<Friendship> userFriends, Integer userId, Integer friendId) {
         return userFriends.stream().anyMatch(friend -> friend.getFriendId() == (friendId));
+    }
+
+    private List<UserDto> listFriendshipToListUserDto(List<Friendship> list) {
+        return list.stream()
+                .map(Friendship::getFriendId)
+                .map(userStorage::getUserById)
+                .map(UserMapper::mapToUserDto)
+                .toList();
     }
 
 }

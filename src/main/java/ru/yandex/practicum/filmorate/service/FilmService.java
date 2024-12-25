@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.*;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
@@ -28,25 +29,24 @@ public class FilmService {
     private final FilmLikeRepository filmLikeRepository;
     private final MpaRepository mpaRepository;
     private final GenreRepository genreRepository;
-    private final FilmRepository filmRepository;
     private static final Logger log = LoggerFactory.getLogger("FilmService");
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage,
+    public FilmService(@Qualifier("filmRepository") FilmStorage filmStorage,
+                       @Qualifier("userRepository") UserStorage userStorage,
                        FilmGenreRepository filmGenreRepository, FilmLikeRepository filmLikeRepository,
-                       MpaRepository mpaRepository, GenreRepository genreRepository, FilmRepository filmRepository) {
+                       MpaRepository mpaRepository, GenreRepository genreRepository) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.filmGenreRepository = filmGenreRepository;
         this.filmLikeRepository = filmLikeRepository;
         this.mpaRepository = mpaRepository;
         this.genreRepository = genreRepository;
-        this.filmRepository = filmRepository;
     }
 
     public FilmDto addLike(Integer id, Integer userId) {
         log.info("Starting to add new like");
-        Film film = filmStorage.getFilms().get(id);
+        Film film = filmStorage.getFilmById(id);
         if (film == null) {
             log.error("Film not found");
             throw new NotFoundException("Фильм с id = " + id + " не найден");
@@ -60,6 +60,7 @@ public class FilmService {
             throw new ValidationException("Этот юзер уже поставил лайк");
         }
         film.addLike(userId);
+        filmLikeRepository.addLike(id, userId);
         filmStorage.update(film);
         FilmDto response = FilmMapper.mapToFilmDto(film);
         response.getLikes().add(userId);
@@ -71,7 +72,7 @@ public class FilmService {
 
     public FilmDto deleteLike(Integer id, Integer userId) {
         log.info("Starting to delete like");
-        Film film = filmStorage.getFilms().get(id);
+        Film film = filmStorage.getFilmById(id);
 
         if (userStorage.getUserById(userId) == null || userStorage.getUserById(id) == null) {
             log.error("User not found");
@@ -102,7 +103,6 @@ public class FilmService {
         if (newFilm.getId() == null) {
             throw new ValidationException("Фильм не был добавлен корректно, ID равен null");
         }
-        filmRepository.addFilm(film);
         setMpa(film);
         setGenres(film);
         return FilmMapper.mapToFilmDto(newFilm);
@@ -122,7 +122,9 @@ public class FilmService {
     }
 
     public FilmDto getWithGenre(Integer id) {
-        return FilmMapper.mapToFilmDto(filmStorage.getFilmById(id));
+        Film film = filmStorage.getFilmById(id);
+        film.setGenres(filmGenreRepository.getGenresByFilmId(id).stream().map(FilmGenre::getGenre).toList());
+        return FilmMapper.mapToFilmDto(film);
     }
 
     private FilmDto addGenresToFilmDto(FilmDto filmDto) {
@@ -148,6 +150,7 @@ public class FilmService {
                     .map(genre -> genreRepository.findById(genre.getId()))
                     .distinct()
                     .toList();
+            genres.forEach((genre -> filmGenreRepository.addGenreToFilm(film.getId(), genre.getId())));
             film.setGenres(genres);
         }
     }

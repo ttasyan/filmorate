@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,12 +17,11 @@ import java.util.*;
 
 
 @Repository
-public class FilmRepository extends BaseRepository<Film> {
+public class FilmRepository extends BaseRepository<Film> implements FilmStorage {
 
-
-    private static final String FIND_ALL_QUERY = "SELECT * FROM films";
-    private static final String FIND_POPULAR_QUERY = "SELECT f.*, m.name FROM films f " +
-            "LEFT JOIN likes l ON f.film_id = l.film_id JOIN mpa m ON f.mpa_id = m.mpa_id "     +
+    private static final String FIND_ALL_QUERY = "SELECT * FROM films f JOIN mpa m ON f.mpa_id = m.mpa_id";
+    private static final String FIND_POPULAR_QUERY = "SELECT f.*, m.mpa_name FROM films f " +
+            "LEFT JOIN likes l ON f.film_id = l.film_id JOIN mpa m ON f.mpa_id = m.mpa_id " +
             "GROUP BY f.film_id ORDER BY COUNT(l.user_id) DESC LIMIT ?";
     private static final String INSERT_QUERY = "INSERT INTO films(name, description, release_date, duration, mpa_id) " +
             "VALUES (?, ?, ?, ?, ?)";
@@ -29,35 +29,24 @@ public class FilmRepository extends BaseRepository<Film> {
             "duration = ? WHERE film_id = ?";
     private static final String ALL_GENRES_FILMS_QUERY = "SELECT * FROM film_genre fg, " +
             "genre g WHERE fg.genre_id = g.genre_id";
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM films f JOIN mpa m on f.mpa_id=" +
+    private static final String FIND_BY_ID_QUERY = "SELECT *, m.mpa_name FROM films f JOIN mpa m on f.mpa_id=" +
             "m.mpa_id WHERE film_id = ?";
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
     }
 
-    public Collection<Film> allFilms() {
-        Collection<Film> films = findMany(FIND_ALL_QUERY);
-        Map<Integer, List<Genre>> genres = getAllGenres();
-        for (Film film : films) {
-            if (genres.containsKey(film.getId())) {
-                film.setGenres(genres.get(film.getId()));
-            }
-        }
-        return films;
+    @Override
+    public List<Film> allFilms() {
+        return findMany(FIND_ALL_QUERY);
     }
 
-    public Collection<Film> popularFilms(Integer count) {
-        Collection<Film> films = findMany(FIND_POPULAR_QUERY, count);
-        Map<Integer, List<Genre>> genres = getAllGenres();
-        for (Film film : films) {
-            if (genres.containsKey(film.getId())) {
-                film.setGenres(genres.get(film.getId()));
-            }
-        }
-        return films;
+    @Override
+    public List<Film> mostLiked(Integer count) {
+        return findMany(FIND_POPULAR_QUERY, count);
     }
 
+    @Override
     public Film addFilm(Film film) {
         Integer id = insert(INSERT_QUERY,
                 film.getName(),
@@ -69,6 +58,7 @@ public class FilmRepository extends BaseRepository<Film> {
         return film;
     }
 
+    @Override
     public Film update(Film newFilm) {
         update(UPDATE_QUERY,
                 newFilm.getName(),
@@ -87,7 +77,7 @@ public class FilmRepository extends BaseRepository<Film> {
             while (rs.next()) {
                 Integer filmId = rs.getInt("film_id");
                 Integer genreId = rs.getInt("genre_id");
-                String genreName = rs.getString("name");
+                String genreName = rs.getString("genre_name");
                 genres.computeIfAbsent(filmId, k -> List.of(new Genre(genreId, genreName)));
             }
             return genres;

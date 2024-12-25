@@ -14,11 +14,11 @@ public class FilmGenreRowMapper implements RowMapper<FilmGenre> {
     public FilmGenre mapRow(ResultSet rs, int rowNum) throws SQLException {
         Genre genre = Genre.builder()
                 .id(rs.getInt("genre_id"))
-                .name(rs.getString("name"))
+                .name(rs.getString("genre_name"))
                 .build();
-        return FilmGenre.builder()
-                .filmId(rs.getInt("film_id"))
-                .genre(genre)
-                .build();
+        FilmGenre filmGenre = new FilmGenre();
+        filmGenre.setFilmId(rs.getInt("film_id"));
+        filmGenre.setGenre(genre);
+        return filmGenre;
     }
 }

@@ -12,8 +12,7 @@ public class FriendshipRepository extends BaseRepository<Friendship> {
 
     private static final String ADD_QUERY = "INSERT INTO friends(user_id, friend_id, status) VALUES (?, ?, ?)";
     private static final String DELETE_QUERY = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
-    private static final String FIND_ALL_FRIENDS_QUERY = "SELECT u.* FROM users u JOIN friends f ON u.user_id = f.friend_id " +
-            "WHERE f.user_id = ?";
+    private static final String FIND_ALL_FRIENDS_QUERY = "SELECT * FROM  friends WHERE user_id = ?";
     private static final String FIND_COMMON_FRIENDS_QUERY = "SELECT * FROM friends WHERE USER_ID = ? AND FRIEND_ID " +
             "IN (SELECT FRIEND_ID FROM friends WHERE USER_ID = ?)";
     private static final String UPDATE_FRIEND_BY_ID = "UPDATE friends SET status = ? " +
@@ -24,12 +23,11 @@ public class FriendshipRepository extends BaseRepository<Friendship> {
     }
 
     public Friendship addFriend(Integer userId, Integer friendId, boolean status) {
-        Friendship friendship = Friendship.builder()
-                .userId(userId)
-                .friendId(friendId)
-                .status(status)
-                .build();
-        int id = insert(ADD_QUERY, userId, friendId, status);
+        Friendship friendship = new Friendship();
+        friendship.setUserId(userId);
+        friendship.setFriendId(friendId);
+        friendship.setStatus(status);
+        int id = jdbc.update(ADD_QUERY, userId, friendId, status);
         return friendship;
     }
 
@@ -47,11 +45,10 @@ public class FriendshipRepository extends BaseRepository<Friendship> {
     }
 
     public Friendship updateStatus(Integer userId, Integer friendId, boolean status) {
-        Friendship friendship = Friendship.builder()
-                .userId(userId)
-                .friendId(friendId)
-                .status(status)
-                .build();
+        Friendship friendship = new Friendship();
+        friendship.setUserId(userId);
+        friendship.setFriendId(friendId);
+        friendship.setStatus(status);
         update(UPDATE_FRIEND_BY_ID,
                 status,
                 userId,
